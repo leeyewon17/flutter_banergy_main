@@ -1,0 +1,26 @@
+name: flutter_banergy
+description: "A new Flutter project."
+version: 1.0.0+1
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  image_picker: ^1.0.5
+  flutter_tesseract_ocr: ^0.4.24
+  path_provider: ^2.1.1
+  qr_bar_code_scanner_dialog: ^0.0.5
+  flutter_barcode_scanner: ^2.0.0
+  provider: ^6.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  assets:
+    - images/000.jpeg
+  uses-material-design: true

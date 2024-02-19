@@ -12,7 +12,7 @@ import 'package:flutter_banergy/main_category/Fastfood.dart';
 import 'package:flutter_banergy/main_category/Dessert.dart';
 import 'package:flutter_banergy/main_category/Sandwich.dart';
 import 'package:flutter_banergy/main_category/Food.dart';
-import 'package:flutter_banergy/main_category/cake.dart';
+import 'package:flutter_banergy/main_category/Cake.dart';
 import 'package:flutter_banergy/main_category/Drink.dart';
 import 'package:flutter_banergy/main_category/Mealkit.dart';
 
@@ -192,25 +192,25 @@ class _IconItemState extends State<IconItem> {
       case 'Food':
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => FoodScreenn()),
+          MaterialPageRoute(builder: (context) => FoodScreen()),
         );
         break;
       case 'Cake':
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => CakeScreenn()),
+          MaterialPageRoute(builder: (context) => CakeScreen()),
         );
         break;
       case 'Drink':
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DrinkScreenn()),
+          MaterialPageRoute(builder: (context) => DrinkScreen()),
         );
         break;
       case 'MealKit':
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Mealkitcreenn()),
+          MaterialPageRoute(builder: (context) => MealkitScreen()),
         );
         break;
     }

@@ -14,6 +14,17 @@ dependencies:
   qr_bar_code_scanner_dialog: ^0.0.5
   flutter_barcode_scanner: ^2.0.0
   provider: ^6.1.1
+  animated_switcher_plus: ^1.1.0
+  beamer: ^0.14.1
+  permission_handler: ^11.1.0
+  camera: ^0.10.5+9
+  image_gallery_saver: ^2.0.3
+  http: ^1.1.2
+  shared_preferences: ^2.2.2
+  sqflite: ^2.3.2
+  path: ^1.8.3
+  crypto: ^3.0.3
+  image: ^3.0.1
 
 dev_dependencies:
   flutter_test:
@@ -22,5 +33,7 @@ dev_dependencies:
 
 flutter:
   assets:
-    - images/000.jpeg
+    - assets/
+    - assets/tessdata/
+    - images/
   uses-material-design: true

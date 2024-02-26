@@ -1,27 +1,30 @@
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_banergy/product/information.dart';
-import 'package:flutter_tesseract_ocr/flutter_tesseract_ocr.dart';
-import '../appbar/menu.dart';
-import 'appbar/search.dart';
-import '../mypage/mypage.dart';
-//import 'package:qr_bar_code_scanner_dialog/qr_bar_code_scanner_dialog.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:flutter_banergy/main_category/Fastfood.dart';
-import 'package:flutter_banergy/main_category/Dessert.dart';
-import 'package:flutter_banergy/main_category/Sandwich.dart';
-import 'package:flutter_banergy/main_category/Food.dart';
+import 'package:flutter_banergy/bottombar.dart';
+import 'package:flutter_banergy/appbar/SearchWidget.dart';
 import 'package:flutter_banergy/main_category/Cake.dart';
+import 'package:flutter_banergy/main_category/Dessert.dart';
 import 'package:flutter_banergy/main_category/Drink.dart';
+import 'package:flutter_banergy/main_category/Fastfood.dart';
+import 'package:flutter_banergy/main_category/Food.dart';
 import 'package:flutter_banergy/main_category/Mealkit.dart';
+import 'package:flutter_banergy/main_category/Sandwich.dart';
+import 'package:http/http.dart' as http;
+import '../mypage/mypage.dart';
+import 'dart:io';
+import 'package:flutter_banergy/mainDB.dart';
 
 void main() {
-  runApp(const MainpageApp());
+  runApp(
+    const MaterialApp(
+      home: MainpageApp(),
+    ),
+  );
 }
 
 class MainpageApp extends StatelessWidget {
   final File? image;
+
   const MainpageApp({super.key, this.image});
 
   @override
@@ -29,12 +32,10 @@ class MainpageApp extends StatelessWidget {
     return MaterialApp(
       title: '식품 알레르기 관리 앱',
       theme: ThemeData(
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 255, 255, 255)),
-        useMaterial3: true,
-        appBarTheme: AppBarTheme(
-          backgroundColor: Color.fromARGB(255, 50, 160, 107),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 50, 160, 107),
         ),
+        useMaterial3: true,
       ),
       home: const HomeScreen(),
     );
@@ -42,49 +43,25 @@ class MainpageApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('식품 알레르기 관리 앱'),
-        actions: [
-          InkWell(
-            onTap: () {
-              // 검색 페이지로 이동
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SearchScreen()),
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(Icons.search),
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              // 메뉴 페이지로 이동
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MenuScreen()),
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(Icons.menu),
-            ),
+        actions: const [
+          Flexible(
+            child: SearchWidget(), // Flexible 추가
           ),
         ],
       ),
-      body: Column(
+      body: const Column(
         children: [
           // 여기에 아이콘 슬라이드를 넣어줍니다.
           IconSlider(),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Expanded(
-            child: const ProductGrid(),
+            child: ProductGrid(),
           ),
         ],
       ),
@@ -94,7 +71,7 @@ class HomeScreen extends StatelessWidget {
 }
 
 class IconSlider extends StatelessWidget {
-  const IconSlider({Key? key}) : super(key: key);
+  const IconSlider({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +79,7 @@ class IconSlider extends StatelessWidget {
       height: 80,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        children: [
+        children: const [
           IconItem(icon: Icons.fastfood, label: 'Fast Food'),
           IconItem(icon: Icons.cookie, label: 'Dessert'),
           IconItem(icon: Icons.bakery_dining, label: 'Sandwich'),
@@ -120,8 +97,7 @@ class IconItem extends StatefulWidget {
   final IconData icon;
   final String label;
 
-  const IconItem({Key? key, required this.icon, required this.label})
-      : super(key: key);
+  const IconItem({super.key, required this.icon, required this.label});
 
   @override
   _IconItemState createState() => _IconItemState();
@@ -217,8 +193,35 @@ class _IconItemState extends State<IconItem> {
   }
 }
 
-class ProductGrid extends StatelessWidget {
-  const ProductGrid({Key? key}) : super(key: key);
+class ProductGrid extends StatefulWidget {
+  const ProductGrid({super.key});
+
+  @override
+  _ProductGridState createState() => _ProductGridState();
+}
+
+class _ProductGridState extends State<ProductGrid> {
+  late List<Product> products = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData(); // initState에서 데이터를 불러옵니다.
+  }
+
+  Future<void> fetchData() async {
+    final response = await http.get(
+      Uri.parse('http://192.168.216.174:8000/'),
+    );
+    if (response.statusCode == 200) {
+      setState(() {
+        final List<dynamic> productList = json.decode(response.body);
+        products = productList.map((item) => Product.fromJson(item)).toList();
+      });
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -226,200 +229,62 @@ class ProductGrid extends StatelessWidget {
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
       ),
+      itemCount: products.length,
       itemBuilder: (context, index) {
-        // 상품 아이콘을 가져오거나 사용하는 코드 작성
         return Card(
           child: InkWell(
-              onTap: () {
-                //아이콘 클릭 시 실행할 동작 추가
-                _handleProductClick(context, index);
-              },
-              child: Column(
-                children: [
-                  const Icon(Icons.fastfood, size: 48), // 아이콘 예시 (음식 아이콘)
-                  Text('Product $index'),
-                  Text('Description of Product $index'),
-                ],
-              )),
+            onTap: () {
+              _handleProductClick(context, products[index]);
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Image.network(
+                    products[index].frontproduct,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                Text(
+                  products[index].name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4.0),
+                Text(products[index].allergens),
+              ],
+            ),
+          ),
         );
       },
     );
   }
-}
 
-void _handleProductClick(BuildContext context, int index) {
-  // 아이콘 클릭 시 실행할 동작을 여기에 추가
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('상품 정보'),
-        content: Text('Product $index의 상세 정보를 표시합니다.'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('닫기'),
+  void _handleProductClick(BuildContext context, Product product) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('상품 정보'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('카테고리: ${product.kategorie}'),
+              Text('이름: ${product.name}'),
+              Text('정면 이미지: ${product.frontproduct}'),
+              Text('후면 이미지: ${product.backproduct}'),
+              Text('알레르기 식품: ${product.allergens}'),
+            ],
           ),
-        ],
-      );
-    },
-  );
-}
-
-//바텀 바 내용 구현
-class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({Key? key}) : super(key: key);
-
-  @override
-  _BottomNavBarState createState() => _BottomNavBarState();
-}
-
-class _BottomNavBarState extends State<BottomNavBar> {
-  final ImagePicker _imagePicker = ImagePicker();
-  String? code;
-  String parsedText = '';
-
-  late File? pickedImage; // 수정: 이미지 파일을 저장할 변수
-  late File? _image;
-  // getImage 함수 안에서 사용될 변수들을 함수 밖으로 이동
-  late XFile? pickedFile;
-  late String img64;
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.adjust),
-          label: "Lens",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'My',
-        ),
-      ],
-      onTap: (index) {
-        if (index == 0) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MainpageApp()),
-          );
-        } else if (index == 1) {
-          showModalBottomSheet(
-            context: context,
-            builder: (BuildContext context) {
-              return SingleChildScrollView(
-                  child: Container(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // 카메라 부분
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          Navigator.pop(context);
-
-                          final pickedFile = await _imagePicker.pickImage(
-                            source: ImageSource.camera,
-                          );
-
-                          if (pickedFile != null) {
-                            // OCR 수행
-                            var ocrText = await FlutterTesseractOcr.extractText(
-                              pickedFile.path,
-                              language: 'kor',
-                            );
-
-                            // Information 화면으로 이동하여 OCR 결과값 전달
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Information(
-                                  image: File(pickedFile.path),
-                                  parsedText: ocrText,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        child: Text('Camera'),
-                      ),
-                    ),
-                    // 갤러리 부분
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          Navigator.pop(context);
-
-                          final pickedFile = await _imagePicker.pickImage(
-                              source: ImageSource.gallery);
-
-                          if (pickedFile != null) {
-                            // OCR 수행
-                            var ocrText = await FlutterTesseractOcr.extractText(
-                              pickedFile.path,
-                              language: 'kor',
-                            );
-
-                            // Information 화면으로 이동하여 OCR 결과값 전달
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Information(
-                                  image: File(pickedFile.path),
-                                  parsedText: ocrText,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        child: Text('Gallery'),
-                      ),
-                    ),
-
-                    /* qr 코드 부분
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _qrBarCodeScannerDialogPlugin.getScannedQrBarCode(
-                            context: context,
-                            onCode: (code) {
-                              setState(() {
-                                this.code = code;
-                              });
-                            },
-                          );
-                          Navigator.pop(context);
-                        },
-                        child: Text('QR code'),
-                      ),
-                    ),*/
-                    // 바코드 부분
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text('Barcode'),
-                      ),
-                    ),
-                  ],
-                ),
-              ));
-            },
-          );
-        } else if (index == 2) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const MypageApp()),
-          );
-        }
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('닫기'),
+            ),
+          ],
+        );
       },
     );
   }

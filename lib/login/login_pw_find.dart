@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 //import 'package:flutter_banergy/main.dart';
 import 'package:flutter_banergy/login/login_login.dart';
+import 'package:flutter_banergy/login/widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 서버 연동을 위함
   runApp(
-    MaterialApp(
+    const MaterialApp(
       home: PWFindApp(),
     ),
   );
 }
 
 class PWFindApp extends StatelessWidget {
-  PWFindApp({Key? key}) : super(key: key);
+  const PWFindApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 29, 171, 102)),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 29, 171, 102)),
         useMaterial3: true,
       ),
       home: DefaultTabController(
@@ -31,7 +32,7 @@ class PWFindApp extends StatelessWidget {
                 padding: const EdgeInsets.all(40.0),
                 child: Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -40,15 +41,15 @@ class PWFindApp extends StatelessWidget {
                         width: 80,
                         height: 80,
                       ),
-                      Text(
+                      const Text(
                         '비밀번호 찾기',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 40),
-                      Align(
+                      const SizedBox(height: 40),
+                      const Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           '계정 이름',
@@ -58,19 +59,20 @@ class PWFindApp extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Column(
                         children: [
-                          InputField(
+                          BanergyInputField(
                             label: '',
                             hintText: '이름',
                             iconColor: Colors.grey,
                             hintTextColor: Colors.grey,
                             icon: Icons.account_circle,
                             borderRadius: BorderRadius.circular(12.0),
+                            controller: TextEditingController(),
                           ),
-                          SizedBox(height: 35),
-                          Align(
+                          const SizedBox(height: 35),
+                          const Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
                               '계정 아이디',
@@ -80,17 +82,18 @@ class PWFindApp extends StatelessWidget {
                               ),
                             ),
                           ),
-                          SizedBox(height: 10),
-                          InputField(
+                          const SizedBox(height: 10),
+                          BanergyInputField(
                             label: '',
                             hintText: '아이디를 입력해주세요.',
                             icon: Icons.account_box,
                             iconColor: Colors.grey,
                             hintTextColor: Colors.grey,
                             borderRadius: BorderRadius.circular(12.0),
+                            controller: TextEditingController(),
                           ),
-                          SizedBox(height: 35),
-                          Align(
+                          const SizedBox(height: 35),
+                          const Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
                               '생년월일',
@@ -100,7 +103,7 @@ class PWFindApp extends StatelessWidget {
                               ),
                             ),
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           DatePickerButton(
                             label: '',
                             hintText: '생년월일',
@@ -171,7 +174,7 @@ class PWFindApp extends StatelessWidget {
 // 달력 위젯 http://rwdb.kr/datepicker/
 class DatePickerButton extends StatefulWidget {
   const DatePickerButton({
-    Key? key,
+    super.key,
     this.label = '',
     this.hintText = '',
     this.icon,
@@ -183,7 +186,7 @@ class DatePickerButton extends StatefulWidget {
     this.iconSize = 24.0,
     this.hintTextSize = 16.0,
     this.backgroundColor = Colors.white,
-  }) : super(key: key);
+  });
 
   final String label;
   final String hintText;
@@ -198,6 +201,7 @@ class DatePickerButton extends StatefulWidget {
   final Color backgroundColor;
 
   @override
+  // ignore: library_private_types_in_public_api
   _DatePickerButtonState createState() => _DatePickerButtonState();
 }
 
@@ -225,12 +229,12 @@ class _DatePickerButtonState extends State<DatePickerButton> {
     return ElevatedButton(
       onPressed: () => _selectDate(context),
       style: ElevatedButton.styleFrom(
-        primary: widget.backgroundColor,
+        backgroundColor: widget.backgroundColor,
         //shadowColor: Colors.transparent,
         minimumSize: Size(widget.buttonWidth, widget.buttonHeight),
         shape: RoundedRectangleBorder(
           borderRadius: widget.borderRadius,
-          side: BorderSide(
+          side: const BorderSide(
             color: Colors.grey,
           ),
         ),
@@ -243,7 +247,7 @@ class _DatePickerButtonState extends State<DatePickerButton> {
             color: widget.iconColor,
             size: widget.iconSize,
           ),
-          SizedBox(width: 8.0),
+          const SizedBox(width: 8.0),
           Text(
             widget.hintText,
             style: TextStyle(

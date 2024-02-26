@@ -1,5 +1,3 @@
-//일단 사용안함
-
 // camerainformation.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -11,6 +9,7 @@ import 'package:flutter_tesseract_ocr/flutter_tesseract_ocr.dart';
 class camerainformation extends StatefulWidget {
   final String imagePath;
 
+  // 생성자 수정이 필요한 부분
   const camerainformation({super.key, required this.imagePath});
 
   @override
